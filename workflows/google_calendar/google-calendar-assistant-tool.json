@@ -1,0 +1,234 @@
+{
+  "name": "Google Calendar - Assistant Tool",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "query"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [-224, -32],
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.query }}",
+        "options": {
+          "systemMessage": "You are a Google Calendar Assistant Tool that manages the user's Google Calendar.\n\nUse the available Google Calendar tools to perform calendar tasks accurately. Choose the most direct tool and avoid unnecessary tool calls.\n\nTOOLS:\n- Get many events: search, find, list, or inspect calendar events.\n- Get an event: retrieve the full details of a specific event.\n- Create an event: create a new calendar event when explicitly requested.\n- Update an event: modify an existing event when explicitly requested.\n- Delete an event: delete an existing event when explicitly requested.\n\nRULES:\n- Never invent calendar information.\n- Use Europe/Lisbon as the default timezone for all events.\n- Do not ask the user to confirm the timezone unless the user explicitly specifies a different timezone.\n- When searching for events, prefer relevant and upcoming events when appropriate.\n- When the user asks about a specific event, retrieve the event details when necessary.\n- Do not confuse an event summary with its full details.\n- Ask for clarification if you cannot determine which event the user means.\n- When creating an event, use the date, time, title, and other details provided by the user.\n- If the user provides a duration, calculate the end time from the start time.\n- Ask for clarification if essential information is missing.\n- When updating an event, only change the information the user explicitly asks to change.\n- Never delete or modify an event unless the user explicitly requests it.\n- Before deleting an event, make sure you have identified the correct event.\n- Do not perform actions the user did not request.\n- After completing an action, briefly confirm what was done.\n- If an action fails, explain the failure briefly.\n\nReturn a concise result after completing the requested action."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [-64, -32],
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Search the user's primary Google Calendar for events. Use this tool when the user asks to find, list, or search calendar events. The calendar is already configured, so do not ask the user which calendar to use.",
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "primary",
+          "mode": "list"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [192, 176],
+      "name": "Get many events in Google Calendar"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "calendar": {
+          "__rl": true,
+          "value": "primary",
+          "mode": "list"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [352, 176],
+      "name": "Get an event in Google Calendar"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Create a Google Calendar event. Use this tool when the user explicitly asks to create an event. Determine the start and end date/time from the user's request. Use Europe/Lisbon timezone unless the user specifies another timezone. If the user provides a duration instead of an end time, calculate the end time from the start time. Ask for clarification if the date or time is essential and cannot be determined.",
+        "calendar": {
+          "__rl": true,
+          "value": "primary",
+          "mode": "list"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', `Start date and time of the event. Use Europe/Lisbon timezone by default. Interpret relative dates such as tomorrow, Friday, next week, etc. based on the current date and time.`, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', `End date and time of the event. Use Europe/Lisbon timezone by default. If the user gives a duration instead of an end time, calculate the end time from the start time.`, 'string') }}",
+        "additionalFields": {
+          "description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Description', ``, 'string') }}",
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', `The title or name of the calendar event.`, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [512, 176],
+      "name": "Create an event in Google Calendar"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "calendar": {
+          "__rl": true,
+          "value": "primary",
+          "mode": "list"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
+        "updateFields": {
+          "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', `New end date and time for the event. Use Europe/Lisbon timezone by default.`, 'string') }}",
+          "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', `New start date and time for the event. Use Europe/Lisbon timezone by default.`, 'string') }}",
+          "summary": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Summary', `New title of the event. Only provide this when the user explicitly asks to change the title.`, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [672, 176],
+      "name": "Update an event in Google Calendar"
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "calendar": {
+          "__rl": true,
+          "value": "primary",
+          "mode": "list"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [192, 336],
+      "name": "Delete an event in Google Calendar"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-5-mini",
+          "mode": "list"
+        },
+        "builtInTools": {},
+        "options": {
+          "reasoningEffort": "low"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [-192, 192],
+      "name": "OpenAI Chat Model"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many events in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get an event in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an event in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update an event in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete an event in Google Calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "timezone": "Europe/Lisbon",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "nodeGroups": [],
+  "tags": []
+}
