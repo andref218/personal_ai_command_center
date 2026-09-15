@@ -1,0 +1,302 @@
+{
+  "name": "GitHub - Assistant Tool",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "query"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [-208, -16],
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.query }}",
+        "options": {
+          "systemMessage": "You are a GitHub Assistant specialized in helping users explore and understand their GitHub repositories.\n\nYour job is to answer questions about the user's GitHub repositories using the available GitHub tools.\n\nYou can:\n- List the user's repositories\n- Get information about a repository\n- Read repository README files\n- Read files from a repository\n- Get the user's issues\n- Get details about an issue\n- Get details about a pull request\n\nIMPORTANT RULES:\n\n1. Use the available GitHub tools whenever the user's question requires information from GitHub.\n2. Do not invent repository names, files, issues, pull requests, technologies, or other GitHub information.\n3. If the user refers to a repository without providing the owner or repository name, use the available tools to identify it when possible.\n4. When analyzing a repository, use the README and repository files when necessary rather than relying only on the repository metadata.\n5. When the user asks about code, retrieve the relevant file before answering whenever possible.\n6. If you cannot find the requested information, clearly say that you could not find it.\n7. Distinguish between information retrieved from GitHub and your own explanation or interpretation.\n8. Keep answers clear, concise, and useful.\n9. When referring to a repository, issue, pull request, or file, include its name so the user knows what you are referring to.\n10. Never claim to have inspected a file, repository, issue, or pull request unless you actually retrieved it using a GitHub tool.\n\nWhen a user asks a question:\n1. Determine what GitHub information is needed.\n2. Select the appropriate GitHub tool.\n3. Retrieve the required information.\n4. Analyze the retrieved information.\n5. Give the user a direct answer.\n\nFor questions about how a repository works, inspect the README and relevant source files before."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [0, -16],
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {
+          "reasoningEffort": "low"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [-112, 176],
+      "name": "OpenAI Chat Model"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "You have access to a GitHub tool for retrieving information about a specific repository.\n\nUse this tool whenever the user asks about a specific GitHub repository, including its description, visibility, language, stars, forks, issues, or other repository metadata.\n\nBefore using the tool, identify the repository owner and repository name from the user's request or conversation context.\n\nDo not use this tool to list all repositories. It is only for retrieving information about a specific repository.\n\nDo not invent repository information. Use only the data returned by the GitHub tool.",
+        "resource": "repository",
+        "operation": "get",
+        "owner": {
+          "__rl": true,
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Repository_Owner', ``, 'string') }}",
+          "mode": "url",
+          "__regex": "https:\\/\\/(?:[^/]+)\\/([-_0-9a-zA-Z]+)"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Repository_Name', ``, 'string') }}",
+          "mode": "url",
+          "__regex": "https:\\/\\/(?:[^/]+)\\/(?:[-_0-9a-zA-Z]+)\\/([-_.0-9a-zA-Z]+)"
+        }
+      },
+      "type": "n8n-nodes-base.githubTool",
+      "typeVersion": 1.1,
+      "position": [160, 368],
+      "name": "Get a repository in GitHub"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "You have access to a GitHub tool for retrieving the user's repositories. Use this tool when the user asks about their GitHub repositories, projects, or wants to find a repository. Return the available repositories so you can identify the relevant repository before using other GitHub tools.",
+        "resource": "user",
+        "owner": {
+          "__rl": true,
+          "mode": "name",
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Repository_Owner', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.githubTool",
+      "typeVersion": 1.1,
+      "position": [160, 192],
+      "name": "Get a user's repositories in GitHub"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "You have access to a GitHub tool for retrieving issues associated with the user. Use this tool when the user asks about their GitHub issues, open issues, assigned issues, or issues they are involved with. Return the relevant issues so you can summarize or answer questions about them.",
+        "resource": "user",
+        "operation": "getUserIssues",
+        "getUserIssuesFilters": {}
+      },
+      "type": "n8n-nodes-base.githubTool",
+      "typeVersion": 1.1,
+      "position": [320, 192],
+      "name": "Get a user's issues in GitHub"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "You have access to a GitHub tool for retrieving a specific issue from a repository. Use this tool when the user asks for details about a specific GitHub issue. The repository owner, repository name, and issue number should be determined from the user's request or from previous GitHub tool results.",
+        "operation": "get",
+        "owner": {
+          "__rl": true,
+          "mode": "url",
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Repository_Owner', ``, 'string') }}",
+          "__regex": "https:\\/\\/(?:[^/]+)\\/([-_0-9a-zA-Z]+)"
+        },
+        "repository": {
+          "__rl": true,
+          "mode": "url",
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Repository_Name', ``, 'string') }}",
+          "__regex": "https:\\/\\/(?:[^/]+)\\/(?:[-_0-9a-zA-Z]+)\\/([-_.0-9a-zA-Z]+)"
+        },
+        "issueNumber": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Issue_Number', ``, 'number') }}"
+      },
+      "type": "n8n-nodes-base.githubTool",
+      "typeVersion": 1.1,
+      "position": [320, 368],
+      "name": "Get an issue in GitHub"
+    },
+    {
+      "parameters": {
+        "resource": "pullRequest",
+        "operation": "get",
+        "pullRequestNumber": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('PR_Number', `The number of the pull request to retrieve.`, 'number') }}",
+        "owner": {
+          "__rl": true,
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Repository_Owner', `The GitHub username or organization that owns the repository.`, 'string') }}",
+          "mode": "url"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Repository_Name', `The name of the GitHub repository containing the pull request.`, 'string') }}",
+          "mode": "url"
+        }
+      },
+      "type": "n8n-nodes-base.githubTool",
+      "typeVersion": 1.1,
+      "position": [496, 368],
+      "name": "Get a pull request in GitHub"
+    },
+    {
+      "parameters": {
+        "toolDescription": "Reads and returns the README file of a GitHub repository.",
+        "url": "=https://api.github.com/repos/{{ $fromAI('owner', 'GitHub repository owner/username') }}/{{ $fromAI('repo', 'GitHub repository name') }}/readme",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/vnd.github.raw+json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.5,
+      "position": [672, 368],
+      "name": "Get GitHub Repository README"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Gets the contents of a file from a GitHub repository. Use this to inspect source code, configuration files, or other repository files when answering questions about the codebase.",
+        "resource": "file",
+        "operation": "get",
+        "owner": {
+          "__rl": true,
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Repository_Owner', `GitHub username or organization that owns the repository.`, 'string') }}",
+          "mode": "url"
+        },
+        "repository": {
+          "__rl": true,
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Repository_Name', `Name of the GitHub repository.`, 'string') }}",
+          "mode": "url"
+        },
+        "filePath": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('File_Path', `Path to the file within the repository, for example package.json or src/auth.ts.`, 'string') }}",
+        "asBinaryProperty": false,
+        "additionalParameters": {}
+      },
+      "type": "n8n-nodes-base.githubTool",
+      "typeVersion": 1.1,
+      "position": [832, 368],
+      "name": "Get a file in GitHub"
+    }
+  ],
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a repository in GitHub": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a user's repositories in GitHub": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a user's issues in GitHub": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get an issue in GitHub": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a pull request in GitHub": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get GitHub Repository README": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file in GitHub": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "nodeGroups": [],
+  "tags": []
+}
