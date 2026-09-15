@@ -44,6 +44,7 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
       "position": [-112, 176],
+      "id": "ee2a60be-8974-471a-be4e-a437dfc4d4d3",
       "name": "OpenAI Chat Model"
     },
     {
@@ -55,14 +56,12 @@
         "owner": {
           "__rl": true,
           "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Repository_Owner', ``, 'string') }}",
-          "mode": "url",
-          "__regex": "https:\\/\\/(?:[^/]+)\\/([-_0-9a-zA-Z]+)"
+          "mode": "name"
         },
         "repository": {
           "__rl": true,
           "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Repository_Name', ``, 'string') }}",
-          "mode": "url",
-          "__regex": "https:\\/\\/(?:[^/]+)\\/(?:[-_0-9a-zA-Z]+)\\/([-_.0-9a-zA-Z]+)"
+          "mode": "name"
         }
       },
       "type": "n8n-nodes-base.githubTool",
@@ -175,12 +174,12 @@
         "owner": {
           "__rl": true,
           "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Repository_Owner', `GitHub username or organization that owns the repository.`, 'string') }}",
-          "mode": "url"
+          "mode": "name"
         },
         "repository": {
           "__rl": true,
           "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Repository_Name', `Name of the GitHub repository.`, 'string') }}",
-          "mode": "url"
+          "mode": "name"
         },
         "filePath": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('File_Path', `Path to the file within the repository, for example package.json or src/auth.ts.`, 'string') }}",
         "asBinaryProperty": false,
