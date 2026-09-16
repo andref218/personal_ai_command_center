@@ -1,0 +1,72 @@
+{
+  "name": "Web Search - Assistant Tool",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "query"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [-96, 0],
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "q": "={{ $json.query }}",
+        "additionalFields": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-serpapi.serpApi",
+      "typeVersion": 1,
+      "position": [128, 0],
+      "name": "Google search"
+    },
+    {
+      "parameters": {
+        "jsCode": "const results = $json.organic_results || [];\n\nreturn [\n  {\n    json: {\n      results: results.slice(0, 5).map((result) => ({\n        title: result.title || '',\n        link: result.link || '',\n        snippet: result.snippet || '',\n        date: result.date || '',\n        source: result.source || ''\n      }))\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [352, 0],
+      "name": "Format Search Results"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Google search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google search": {
+      "main": [
+        [
+          {
+            "node": "Format Search Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "nodeGroups": [],
+  "tags": []
+}
