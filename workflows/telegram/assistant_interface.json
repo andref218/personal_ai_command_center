@@ -27,25 +27,13 @@
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
       "typeVersion": 1.3,
-      "position": [832, 656],
+      "position": [1344, 464],
       "id": "d6567168-7a79-4083-b452-88d408a1fb3e",
       "name": "OpenAI Chat Model"
     },
     {
       "parameters": {
-        "sessionIdType": "customKey",
-        "sessionKey": "={{ $('Telegram Trigger').first().json.message.chat.id }}",
-        "contextWindowLength": 10
-      },
-      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
-      "typeVersion": 1.4,
-      "position": [992, 656],
-      "id": "ca69c843-2b56-4b87-8c92-560850050d12",
-      "name": "Simple Memory"
-    },
-    {
-      "parameters": {
-        "description": "You have access to a Gmail Assistant Tool for interacting with the user's Gmail account.\n\nUse this tool whenever the user asks to find, search, read, retrieve, inspect, or summarize emails from Gmail.\n\nPass the user's request to the Gmail Assistant Tool clearly and accurately.\n\nThe Gmail Assistant Tool is responsible for deciding how to search for emails and when to retrieve the full content of a specific email.\n\nDo not try to access Gmail directly or invent email information, message IDs, or search results.\n\nUse the information returned by the Gmail Assistant Tool to answer the user's request.\n\nExamples:\n- \"Show me unread emails from LinkedIn\"\n- \"Find emails about job applications\"\n- \"Read the latest email and summarize it\"\n- \"What did they say in the email about the interview?\"",
+        "description": "You have access to a Gmail Assistant Tool for interacting with the user's Gmail account.\n\nUse this tool whenever the user asks to find, search, read, retrieve, inspect, or summarize emails from Gmail.\n\nPass the user's request to the Gmail Assistant Tool clearly and accurately.\n\nThe Gmail Assistant Tool is responsible for deciding how to search for emails and when to retrieve the full content of a specific email.\n\nDo not try to access Gmail directly or invent email information, message IDs, or search results.\n\nUse the information returned by the Gmail Assistant Tool to answer the user's request.\n\nExamples:\n- \"Find emails from a specific sender\"\n- \"Show me unread emails from LinkedIn\"\n- \"Find emails about job applications\"\n- \"Read the latest email from a specific sender and summarize it\"\n- \"What did they say in the email about the interview?\"",
         "workflowId": {
           "__rl": true,
           "value": "K2YzbJ9dh2bKMoQj",
@@ -77,7 +65,7 @@
       },
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2.2,
-      "position": [1168, 496],
+      "position": [1776, 368],
       "id": "cbdc1f88-046e-480d-b824-b0d1caea172c",
       "name": "Call 'Gmail - Assistant Tool'"
     },
@@ -115,7 +103,7 @@
       },
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2.2,
-      "position": [1328, 496],
+      "position": [1936, 368],
       "id": "3e4f3ee4-4020-42dc-9ad1-e3b87702837f",
       "name": "Call 'Google Calendar - Assistant Tool'"
     },
@@ -196,7 +184,7 @@
       },
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
-      "position": [384, 288],
+      "position": [464, 288],
       "id": "4b796457-3a50-44fb-a5f0-2ac25a9b9dcd",
       "name": "Switch"
     },
@@ -208,7 +196,7 @@
       },
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
-      "position": [560, 112],
+      "position": [704, 112],
       "id": "bbc1b0d1-309f-4bb2-8f87-bfb1a53c49ca",
       "name": "Get a file"
     },
@@ -222,7 +210,7 @@
       },
       "type": "@n8n/n8n-nodes-langchain.openAi",
       "typeVersion": 2.3,
-      "position": [704, 112],
+      "position": [880, 112],
       "id": "84e0ac87-ecc4-4b90-8e6a-b20ec9728c77",
       "name": "Transcribe a recording"
     },
@@ -260,7 +248,7 @@
       },
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2.2,
-      "position": [1488, 496],
+      "position": [2096, 368],
       "id": "19e60a52-9c9e-4220-bd87-c359bf45a95a",
       "name": "Call 'GitHub - Assistant Tool'"
     },
@@ -298,7 +286,7 @@
       },
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2.2,
-      "position": [1648, 496],
+      "position": [2256, 368],
       "id": "83fc992c-0ac2-4e7f-b25e-f8a1ea95bcce",
       "name": "Call 'Google Drive - Assistant Tool'"
     },
@@ -347,88 +335,9 @@
       },
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2.2,
-      "position": [1648, 656],
+      "position": [2256, 528],
       "id": "d6f32327-2c08-4208-a817-296b8baf574a",
       "name": "Call 'Send Google Drive File to Telegram'"
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "7d44790f-9172-494f-9082-974ee238f031",
-              "name": "input",
-              "value": "={{ $json.message.text || $json.message.caption || 'The user uploaded a document without instructions.' }}",
-              "type": "string"
-            },
-            {
-              "id": "2accbfae-aa72-45b5-a1f6-5e56465112e5",
-              "name": "file_id",
-              "value": "={{ $json.message.document.file_id }}",
-              "type": "string"
-            },
-            {
-              "id": "cf07b6fc-523f-4ba4-b595-aa8ce06dd3b3",
-              "name": "file_name",
-              "value": "={{ $json.message.document.file_name }}",
-              "type": "string"
-            },
-            {
-              "id": "490a74df-6594-432f-a768-eefa50ddf460",
-              "name": "chat_id",
-              "value": "={{ $json.message.chat.id }}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.5,
-      "position": [704, 464],
-      "id": "0b860e8f-fa4b-4d50-a368-a075aabf94bb",
-      "name": "Edit Fields"
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "27aa18e4-1737-4b0c-bb07-1f54bb5f89c0",
-              "name": "input",
-              "value": "={{ $json.message.text }}",
-              "type": "string"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.5,
-      "position": [704, 288],
-      "id": "d114013d-cabe-46fc-8b16-c39ba836e9e3",
-      "name": "Edit Fields1"
-    },
-    {
-      "parameters": {
-        "assignments": {
-          "assignments": [
-            {
-              "id": "d9981416-d6ab-4091-9361-8239420b858d",
-              "name": "input",
-              "value": "={{ $json.text }}",
-              "type": "string"
-            }
-          ]
-        },
-        "includeOtherFields": true,
-        "options": {}
-      },
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 3.5,
-      "position": [848, 112],
-      "id": "a4a600f0-eeac-4203-8920-623d3f69d24c",
-      "name": "Edit Fields2"
     },
     {
       "parameters": {
@@ -464,7 +373,7 @@
       },
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2.2,
-      "position": [1808, 496],
+      "position": [2416, 368],
       "id": "acbe38d8-6bd2-4f31-bb54-19014288cc43",
       "name": "Call 'Web Search - Assistant Tool'"
     },
@@ -476,60 +385,9 @@
       },
       "type": "n8n-nodes-base.dateTimeTool",
       "typeVersion": 2,
-      "position": [1792, 272],
+      "position": [2896, 368],
       "id": "8879ee02-6be9-4094-a4e8-c8fd021bc3f8",
       "name": "Date & Time"
-    },
-    {
-      "parameters": {
-        "operation": "sendChatAction",
-        "chatId": "={{ $json.message.chat.id }}"
-      },
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [-112, 304],
-      "id": "c0d02141-fdbf-4af6-8343-92601f14c98d",
-      "name": "Send a chat action"
-    },
-    {
-      "parameters": {
-        "jsCode": "const telegram = $('Telegram Trigger').first().json;\nconst processingMessage = $('Send a text message1').first().json;\n\nreturn [\n  {\n    json: {\n      ...telegram,\n      processing_message_id: processingMessage.result.message_id\n    }\n  }\n];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [224, 304],
-      "id": "e7f6a964-e079-4e12-a808-57764b965748",
-      "name": "Code in JavaScript"
-    },
-    {
-      "parameters": {
-        "chatId": "={{ $('Telegram Trigger').first().json.message.chat.id }}",
-        "text": "•••",
-        "additionalFields": {
-          "appendAttribution": false
-        }
-      },
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [64, 304],
-      "id": "7e1d83e8-6d2c-4ba5-a690-1c4361bcc8e2",
-      "name": "Send a text message1"
-    },
-    {
-      "parameters": {
-        "operation": "editMessageText",
-        "chatId": "={{ $('Telegram Trigger').first().json.message.chat.id }}",
-        "messageId": "={{ $('Send a text message1').first().json.result.message_id }}",
-        "text": "={{ $json.output }}",
-        "additionalFields": {
-          "parse_mode": "HTML"
-        }
-      },
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [1472, 96],
-      "id": "99955561-492b-418c-b869-828f6e40fbcc",
-      "name": "Edit a text message"
     },
     {
       "parameters": {
@@ -542,7 +400,7 @@
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
-      "position": [1056, 240],
+      "position": [1344, 112],
       "id": "6ca47ed3-ab18-44e4-a12b-c207c566b305",
       "name": "AI Personal Assistant Main Agent"
     },
@@ -580,7 +438,7 @@
       },
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2.2,
-      "position": [1968, 496],
+      "position": [2576, 368],
       "id": "95c345ac-a9dd-41da-ad67-71af3421b1b5",
       "name": "Call 'Google Sheets - Assistant Tool'"
     },
@@ -662,7 +520,7 @@
       },
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2.2,
-      "position": [2144, 496],
+      "position": [2752, 368],
       "id": "281ff4fd-a022-4652-a2da-01f0d284c13e",
       "name": "Call 'Google Sheets Builder'"
     },
@@ -700,9 +558,242 @@
       },
       "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
       "typeVersion": 2.2,
-      "position": [1168, 784],
+      "position": [3024, 368],
       "id": "9d816728-94c3-442f-b9b0-72c9eac5156e",
       "name": "Call 'Todoist - Assistant Tool'"
+    },
+    {
+      "parameters": {
+        "operation": "sendChatAction",
+        "chatId": "={{ $json.message.chat.id }}"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [-112, 304],
+      "id": "c0d02141-fdbf-4af6-8343-92601f14c98d",
+      "name": "Send a Processing Status"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').first().json.message.chat.id }}",
+        "text": "•••",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [64, 304],
+      "id": "7e1d83e8-6d2c-4ba5-a690-1c4361bcc8e2",
+      "name": "Send Processing Message"
+    },
+    {
+      "parameters": {
+        "jsCode": "const telegram = $('Telegram Trigger').first().json;\nconst processingMessage = $('Send Processing Message').first().json;\n\nreturn [\n  {\n    json: {\n      ...telegram,\n      processing_message_id: processingMessage.result.message_id\n    }\n  }\n];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [224, 304],
+      "id": "e7f6a964-e079-4e12-a808-57764b965748",
+      "name": "Normalize Telegram Input"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d9981416-d6ab-4091-9361-8239420b858d",
+              "name": "input",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [1072, 112],
+      "id": "a4a600f0-eeac-4203-8920-623d3f69d24c",
+      "name": "Prepare Voice Input"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "27aa18e4-1737-4b0c-bb07-1f54bb5f89c0",
+              "name": "input",
+              "value": "={{ $json.message.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [880, 304],
+      "id": "d114013d-cabe-46fc-8b16-c39ba836e9e3",
+      "name": "Prepare Text Input"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7d44790f-9172-494f-9082-974ee238f031",
+              "name": "input",
+              "value": "={{ $json.message.text || $json.message.caption || 'The user uploaded a document without instructions.' }}",
+              "type": "string"
+            },
+            {
+              "id": "2accbfae-aa72-45b5-a1f6-5e56465112e5",
+              "name": "file_id",
+              "value": "={{ $json.message.document.file_id }}",
+              "type": "string"
+            },
+            {
+              "id": "cf07b6fc-523f-4ba4-b595-aa8ce06dd3b3",
+              "name": "file_name",
+              "value": "={{ $json.message.document.file_name }}",
+              "type": "string"
+            },
+            {
+              "id": "490a74df-6594-432f-a768-eefa50ddf460",
+              "name": "chat_id",
+              "value": "={{ $json.message.chat.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [880, 496],
+      "id": "0b860e8f-fa4b-4d50-a368-a075aabf94bb",
+      "name": "Prepare Document Input"
+    },
+    {
+      "parameters": {
+        "operation": "editMessageText",
+        "chatId": "={{ $('Telegram Trigger').first().json.message.chat.id }}",
+        "messageId": "={{ $('Send Processing Message').first().json.result.message_id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [1872, -16],
+      "id": "99955561-492b-418c-b869-828f6e40fbcc",
+      "name": "Update Processing Message"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Telegram Trigger').first().json.message.chat.id }}",
+        "contextWindowLength": 10
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [1504, 464],
+      "id": "ca69c843-2b56-4b87-8c92-560850050d12",
+      "name": "Conversation Memory"
+    },
+    {
+      "parameters": {
+        "content": "## 1. Telegram Input",
+        "height": 272,
+        "width": 688,
+        "color": "#510D63"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [-320, 240],
+      "typeVersion": 1,
+      "id": "aafee10c-3b0f-4417-9867-b89c1dd39ba4",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "## 3. Input Processing",
+        "height": 640,
+        "width": 560,
+        "color": "#102047"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [656, 32],
+      "typeVersion": 1,
+      "id": "605b1348-0b6c-41a8-9f0e-4ce11f7693c4",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "## 2. Route Input",
+        "height": 304,
+        "width": 224,
+        "color": "#11470A"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [400, 224],
+      "typeVersion": 1,
+      "id": "30b7f37e-2397-4316-b715-39a319a0dbce",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "## 4. Main AI Assistant",
+        "height": 256,
+        "width": 416,
+        "color": "#1B1E2D"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [1248, 32],
+      "typeVersion": 1,
+      "id": "214b9882-80ba-4b8a-a5a8-2cb20ab6bcb1",
+      "name": "Sticky Note3"
+    },
+    {
+      "parameters": {
+        "content": "## 7. LLM Configuration and Simple Memory",
+        "height": 352,
+        "width": 416,
+        "color": "#370111"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [1248, 320],
+      "typeVersion": 1,
+      "id": "fdf0acdd-45ad-4bfc-bd53-f7ef8289d470",
+      "name": "Sticky Note4"
+    },
+    {
+      "parameters": {
+        "content": "## 5. Response",
+        "height": 240,
+        "width": 384,
+        "color": "#510D63"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [1728, -64],
+      "typeVersion": 1,
+      "id": "ab7ca6fd-0c7f-4002-80ab-7e4141d1a99e",
+      "name": "Sticky Note5"
+    },
+    {
+      "parameters": {
+        "content": "## 6. Assistant Tools",
+        "height": 368,
+        "width": 1456,
+        "color": "#51340B"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [1712, 304],
+      "typeVersion": 1,
+      "id": "34a92010-87b0-4b4e-a005-151aaad0e46e",
+      "name": "Sticky Note6"
     }
   ],
   "pinData": {},
@@ -711,7 +802,7 @@
       "main": [
         [
           {
-            "node": "Send a chat action",
+            "node": "Send a Processing Status",
             "type": "main",
             "index": 0
           }
@@ -724,17 +815,6 @@
           {
             "node": "AI Personal Assistant Main Agent",
             "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Simple Memory": {
-      "ai_memory": [
-        [
-          {
-            "node": "AI Personal Assistant Main Agent",
-            "type": "ai_memory",
             "index": 0
           }
         ]
@@ -773,14 +853,14 @@
         ],
         [
           {
-            "node": "Edit Fields1",
+            "node": "Prepare Text Input",
             "type": "main",
             "index": 0
           }
         ],
         [
           {
-            "node": "Edit Fields",
+            "node": "Prepare Document Input",
             "type": "main",
             "index": 0
           }
@@ -802,7 +882,7 @@
       "main": [
         [
           {
-            "node": "Edit Fields2",
+            "node": "Prepare Voice Input",
             "type": "main",
             "index": 0
           }
@@ -842,39 +922,6 @@
         ]
       ]
     },
-    "Edit Fields": {
-      "main": [
-        [
-          {
-            "node": "AI Personal Assistant Main Agent",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Edit Fields1": {
-      "main": [
-        [
-          {
-            "node": "AI Personal Assistant Main Agent",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Edit Fields2": {
-      "main": [
-        [
-          {
-            "node": "AI Personal Assistant Main Agent",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Call 'Web Search - Assistant Tool'": {
       "ai_tool": [
         [
@@ -897,44 +944,11 @@
         ]
       ]
     },
-    "Send a chat action": {
-      "main": [
-        [
-          {
-            "node": "Send a text message1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Code in JavaScript": {
-      "main": [
-        [
-          {
-            "node": "Switch",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Send a text message1": {
-      "main": [
-        [
-          {
-            "node": "Code in JavaScript",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "AI Personal Assistant Main Agent": {
       "main": [
         [
           {
-            "node": "Edit a text message",
+            "node": "Update Processing Message",
             "type": "main",
             "index": 0
           }
@@ -969,6 +983,83 @@
           {
             "node": "AI Personal Assistant Main Agent",
             "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a Processing Status": {
+      "main": [
+        [
+          {
+            "node": "Send Processing Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Processing Message": {
+      "main": [
+        [
+          {
+            "node": "Normalize Telegram Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Telegram Input": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Voice Input": {
+      "main": [
+        [
+          {
+            "node": "AI Personal Assistant Main Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Text Input": {
+      "main": [
+        [
+          {
+            "node": "AI Personal Assistant Main Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Document Input": {
+      "main": [
+        [
+          {
+            "node": "AI Personal Assistant Main Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Conversation Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Personal Assistant Main Agent",
+            "type": "ai_memory",
             "index": 0
           }
         ]
