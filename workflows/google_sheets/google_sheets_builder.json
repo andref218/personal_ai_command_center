@@ -1,0 +1,178 @@
+{
+  "name": "Google Sheets Builder",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "document"
+            },
+            {
+              "name": "sheet"
+            },
+            {
+              "name": "headers",
+              "type": "array"
+            },
+            {
+              "name": "rows",
+              "type": "array"
+            },
+            {
+              "name": "request"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [-176, -32],
+      "id": "05cab600-1d77-40c2-b628-0ac01621186d",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "jsCode": "const original = $('When Executed by Another Workflow').first().json;\n\nconst headers = original.headers;\nconst rows = original.rows;\n\nif (!Array.isArray(headers) || !Array.isArray(rows)) {\n  throw new Error('Invalid Headers or Rows.');\n}\n\nreturn rows.map((row) => ({\n  json: Object.fromEntries(\n    headers.map((header, index) => [\n      header,\n      row[index] ?? ''\n    ])\n  )\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [496, -32],
+      "id": "a7de2b39-655b-42c4-90c6-1aa29240c112",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "={{ $('Search files and folders').isExecuted\n  ? $('Search files and folders').first().json.id\n  : $('When Executed by Another Workflow').first().json.document }}",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "={{ $('When Executed by Another Workflow').first().json.sheet }}",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [720, -32],
+      "id": "51a7bf30-dd0c-4a6c-a7a4-5143ecba7666",
+      "name": "Append row in sheet"
+    },
+    {
+      "parameters": {
+        "resource": "fileFolder",
+        "queryString": "={{ $json.document }}",
+        "filter": {},
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [272, 48],
+      "id": "5b2912ec-f07c-4f61-8826-05b490b28a62",
+      "name": "Search files and folders"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "71d7e319-6bf8-46db-8f57-3c8f451d080d",
+              "leftValue": "={{ $json.document }}",
+              "rightValue": "^[a-zA-Z0-9_-]{20,}$",
+              "operator": {
+                "type": "string",
+                "operation": "regex"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [48, -32],
+      "id": "2b08ad11-c9bb-4c74-8a94-9246bfe04118",
+      "name": "If"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search files and folders": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Search files and folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "nodeGroups": [],
+  "tags": []
+}
