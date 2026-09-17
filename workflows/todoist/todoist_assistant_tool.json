@@ -1,0 +1,292 @@
+{
+  "name": "Todoist - Assistant Tool",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "request"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [-240, -16],
+      "id": "59db66ee-e721-4cfe-827a-d5b63a35c6cb",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.request }}",
+        "options": {
+          "systemMessage": "You are a Todoist assistant responsible for managing the user's tasks and projects.\n\nGENERAL:\n- Use the appropriate Todoist tool for every task or project request.\n- Never invent IDs, names, dates, or results.\n- Use tool results as the source of truth.\n- Only perform actions explicitly requested.\n- If multiple tasks or projects match, ask for clarification.\n- Be concise.\n\nTASKS:\n- Create a task → Create a task.\n- Find/list tasks → Get many tasks.\n- Get task details → Get a task.\n- Update a task → Update a task.\n- Complete a task → Close a task.\n- Delete a task → Delete a task.\n- When a task is referenced by name instead of ID, use Get many tasks first.\n- When updating, change only the requested fields.\n- Do not invent project, label, priority, description, or due date values.\n\nPROJECTS:\n- Find projects → Get many projects.\n- Create a project → Create a project.\n- Project fields in Create/Update Task use IDs only.\n- Never pass a project name as a project ID.\n- When a project is referenced by name, use Get many projects first.\n- If no project is specified, do not provide a project ID.\n\nDATES:\n- User timezone: Europe/Lisbon.\n- Use the Due String field for dates and times.\n- Use natural language: \"today\", \"tomorrow\", \"tomorrow at 10:00\", \"next Monday at 15:00\".\n- Never ask for the user's timezone.\n- Never use a field named \"due\".\n\nFILTERS:\n- today → \"today\"\n- tomorrow → \"tomorrow\"\n- overdue → \"overdue\"\n- keyword search → \"search: <term>\"\n- Do not add \"!completed\".\n- Use only supported Todoist filter syntax."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [-16, -16],
+      "id": "6fb50361-524c-45c7-9445-56b15d2407e4",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {
+          "reasoningEffort": "low"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [-160, 192],
+      "id": "5850e2fe-46cd-4b35-bc65-c18f6182dfaa",
+      "name": "OpenAI Chat Model"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Create a new Todoist task with the information provided by the user.\nUse the task content as the task title.\nSet the project, labels, due date, priority, and other fields only when provided or requested.",
+        "project": {
+          "__rl": true,
+          "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Project_Name_or_ID', ``, 'string') }}",
+          "mode": "id"
+        },
+        "labels": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Label_Names', ``, 'string') }}",
+        "content": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Content', ``, 'string') }}",
+        "options": {
+          "description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Description', ``, 'string') }}",
+          "dueString": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Due_String', ``, 'string') }}",
+          "priority": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Priority', ``, 'number') }}"
+        }
+      },
+      "type": "n8n-nodes-base.todoistTool",
+      "typeVersion": 2.2,
+      "position": [208, 144],
+      "id": "7eaf2926-3966-4f2e-9479-d5ecc942e012",
+      "name": "Create a task in Todoist"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "filters": {
+          "filter": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Filter', ``, 'string') }}"
+        }
+      },
+      "type": "n8n-nodes-base.todoistTool",
+      "typeVersion": 2.2,
+      "position": [208, 320],
+      "id": "7e38593a-cfed-4ffa-bc3e-8229e1dbdc8a",
+      "name": "Get many tasks in Todoist"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Get a specific Todoist task using its task ID and return its current details.\nUse this tool when the task ID is already known. If the user identifies a task by name or description instead of an ID, use Get Many Tasks first to find the correct task.",
+        "operation": "get",
+        "taskId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Task_ID', ``, 'string') }}"
+      },
+      "type": "n8n-nodes-base.todoistTool",
+      "typeVersion": 2.2,
+      "position": [368, 144],
+      "id": "a2f7ef52-8d73-4ea2-b4f7-9684d0938628",
+      "name": "Get a task in Todoist"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Update an existing Todoist task using the provided task ID. Only modify the fields requested by the user. Do not change any other task properties.",
+        "operation": "update",
+        "taskId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Task_ID', ``, 'string') }}",
+        "updateFields": {
+          "content": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Content', ``, 'string') }}",
+          "description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Description', ``, 'string') }}",
+          "dueString": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Due_String', ``, 'string') }}",
+          "priority": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Priority', ``, 'number') }}"
+        }
+      },
+      "type": "n8n-nodes-base.todoistTool",
+      "typeVersion": 2.2,
+      "position": [528, 144],
+      "id": "5c9b35f4-5365-4214-b951-6dd9b1463afd",
+      "name": "Update a task in Todoist"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Complete a Todoist task using its task ID. Use this tool when the user wants to mark a task as completed. If the task ID is not known, use Get Many Tasks first to find the correct task.",
+        "operation": "close",
+        "taskId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Task_ID', ``, 'string') }}"
+      },
+      "type": "n8n-nodes-base.todoistTool",
+      "typeVersion": 2.2,
+      "position": [672, 144],
+      "id": "a7edbf79-18cc-4008-8902-6e4636176477",
+      "name": "Close a task in Todoist"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Delete an existing Todoist task using its task ID. Only use this tool when the user explicitly asks to delete or remove a task. If the task ID is not known, use Get Many Tasks first to find the correct task.",
+        "operation": "delete",
+        "taskId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Task_ID', ``, 'string') }}"
+      },
+      "type": "n8n-nodes-base.todoistTool",
+      "typeVersion": 2.2,
+      "position": [816, 144],
+      "id": "a2ae14a4-7db5-4a13-aad3-c51eb1a06a12",
+      "name": "Delete a task in Todoist"
+    },
+    {
+      "parameters": {
+        "resource": "project",
+        "operation": "getAll"
+      },
+      "type": "n8n-nodes-base.todoistTool",
+      "typeVersion": 2.2,
+      "position": [368, 320],
+      "id": "62b38dc1-bac5-47ef-817f-b6d2343fb84d",
+      "name": "Get many projects in Todoist"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Create a new Todoist project with the name provided by the user. Only create a project when the user explicitly requests it.",
+        "resource": "project",
+        "name": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Name', ``, 'string') }}",
+        "projectOptions": {}
+      },
+      "type": "n8n-nodes-base.todoistTool",
+      "typeVersion": 2.2,
+      "position": [976, 144],
+      "id": "d6987f6a-3e4b-4a4c-9031-ab7e56101aa4",
+      "name": "Create a project in Todoist"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a task in Todoist": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many tasks in Todoist": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a task in Todoist": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a task in Todoist": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Close a task in Todoist": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete a task in Todoist": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many projects in Todoist": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a project in Todoist": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "nodeGroups": [],
+  "tags": []
+}
