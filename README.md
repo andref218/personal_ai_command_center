@@ -109,6 +109,7 @@ Main Agent
    ├── GitHub Assistant
    ├── Todoist Assistant
    ├── Web Search
+   ├── Firecrawl
    └── Date & Time
 ```
 
@@ -137,6 +138,7 @@ The main assistant delegates specialized tasks to dedicated workflows:
 - **GitHub Assistant** — Inspect repositories, source files, README files, issues, and pull requests.
 - **Todoist Assistant** — Create, search, update, complete, and delete tasks, as well as manage projects.
 - **Web Search Assistant** — Retrieve current or external information from the web.
+- **Firecrawl Assistant** — Open, inspect, and extract page-level information from specific webpages.
 - **Date & Time Tool** — Resolve current and relative dates and times.
 
 A dedicated **Google Drive → Telegram** workflow is also used to send selected Drive files back to the current Telegram chat.
@@ -315,6 +317,7 @@ The model choices are intentionally kept relatively lightweight because the syst
 | Task management     | Todoist              |
 | Code repositories   | GitHub               |
 | Web research        | Web Search workflow  |
+| Web page extraction | Firecrawl            |
 | Date/time           | n8n Date & Time tool |
 | Version control     | Git / GitHub         |
 
@@ -368,7 +371,8 @@ A typical import sequence is:
 8. Google Sheets Builder
 9. Todoist Assistant Tool
 10. Web Search Assistant Tool
-11. Main Telegram Assistant Interface
+11. Firecrawl Assistant Tool
+12. Main Telegram Assistant Interface
 ```
 
 After importing:
@@ -418,6 +422,9 @@ personal_ai_command_center/
 │   │
 │   ├── todoist/
 │   │   └── todoist_assistant_tool.json
+|   |
+│   ├── firecrawl/
+│   │   └── firecrawl_assistant_tool.json
 │   │
 │   └── web_search/
 │       └── web_search_assistant_tool.json
