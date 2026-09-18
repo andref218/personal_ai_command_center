@@ -1,0 +1,67 @@
+{
+  "name": "FireCrawl - Assistant Tool",
+  "nodes": [
+    {
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "url"
+            },
+            {
+              "name": "instruction"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -144,
+        0
+      ],
+      "id": "8915747e-8392-4999-976c-9fcfb65f64b5",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "resource": "Agent",
+        "operation": "agent",
+        "prompt": "={{ $json.instruction }}",
+        "specifyUrls": true,
+        "urls": "={{ $json.url }}",
+        "requestOptions": {}
+      },
+      "type": "@mendable/n8n-nodes-firecrawl.firecrawl",
+      "typeVersion": 1,
+      "position": [
+        80,
+        0
+      ],
+      "id": "9e746a8f-f7f8-42e9-9ef7-8bbacfdca71d",
+      "name": "Agent - AI-powered web data extraction (waits for completion)"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Agent - AI-powered web data extraction (waits for completion)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "nodeGroups": [],
+  "id": "5fH0LfK7VnvCu5Ht",
+  "tags": []
+}
